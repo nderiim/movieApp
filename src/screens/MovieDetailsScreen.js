@@ -1,7 +1,10 @@
 import React from 'react'
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, Image, Dimensions, FlatList } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
-import {casts} from '../cast'
+import CastCard from '../components/CastCard'
+import MovieCard from '../components/MovieCard';
+import { casts } from '../cast'
+import { movies } from '../movies';
 
 const MovieDetailsScreen = ({ navigation }) => {
     const title = navigation.getParam('title')
@@ -11,33 +14,8 @@ const MovieDetailsScreen = ({ navigation }) => {
     const description = navigation.getParam('description')
     const imdbRating = navigation.getParam('imdbRating')
 
-    var movies = () => {
-        return (
-            <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity onPress={() => navigation.navigate('MovieDetails', { title: 'Spider-Man: No Way Home', imageUri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', genre: 'Fantasy', released: 2021, type: 'Movie', description: 'Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a Super Hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.', imdbID: '1', imdbRating: 'Not rated yet.' })}>
-                    <Image 
-                        style={styles.similarMovieImageStyle}
-                        source={{uri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg'}}
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('MovieDetails', { title: 'Spider-Man: No Way Home', imageUri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', genre: 'Fantasy', released: 2021, type: 'Movie', description: 'Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a Super Hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.', imdbID: '2', imdbRating: 'Not rated yet.' })}>
-                    <Image 
-                        style={styles.similarMovieImageStyle}
-                        source={{uri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg'}}
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('MovieDetails', { title: 'Spider-Man: No Way Home', imageUri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', genre: 'Fantasy', released: 2021, type: 'Movie', description: 'Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a Super Hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man.', imdbID: '3', imdbRating: 'Not rated yet.' })}>
-                    <Image 
-                        style={styles.similarMovieImageStyle}
-                        source={{uri: 'https://www.themoviedb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg'}}
-                    />
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
     return (
-            <ScrollView style={{backgroundColor: '#2D6176'}}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#2D6176'}}>
                 <Image 
                     style={styles.imageStyle}
                     source={{uri: imageUri}}
@@ -56,27 +34,36 @@ const MovieDetailsScreen = ({ navigation }) => {
                 />
 
                 <Text style={styles.castHeader}>Top Cast</Text>
+                <FlatList
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    keyExtractor={() => Math.random() * 10}
+                    data={casts}
+                    renderItem={({item}) => <CastCard name={item.name} character={item.character} imageUri={item.profile_path} />}
+                />
                 
-                <View style={{alignItems: 'center', marginBottom: 20, flexDirection: 'row'}}>
-                    { // komponent
-                     // map -> flatlist
-                        casts.map(cast => {
-                            return(
-                                <View style={{marginLeft: 4, height: 200, width: 120}}>
-                                    <Image
-                                        style={styles.castImage}
-                                        source={{uri: cast.profile_path}}
-                                    />
-                                    <Text style={styles.castName}>{cast.name}</Text>
-                                    <Text style={{textAlign: 'center', width: 120, color: 'lightgrey'}} >{cast.character}</Text>
-                                </View>
-                            )
-                        })
-                    }
-                </View>
-
                 <Text style={styles.castHeader}>Similar Movies</Text>
-                { movies() }
+                <FlatList
+                    style={{marginBottom: 30}}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    keyExtractor={() => Math.random() * 10}
+                    data={movies}
+                    renderItem={({item}) => 
+                        <MovieCard
+                            navigation={navigation}
+                            title={item.title}
+                            imageUri={item.imageUri}
+                            genre={item.genre}
+                            released={item.released}
+                            type={item.type}
+                            description={item.description}
+                            imdbID={item.imdbID}
+                            imdbRating={item.imdbRating}
+                        />
+                    }
+                />
+
             </ScrollView>
     )
 }
@@ -85,7 +72,7 @@ const styles = StyleSheet.create({
     imageStyle: {
         alignSelf: 'center',
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height - 120,
+        height: Dimensions.get('window').height / 2,
     },
     header: {
         fontSize: 30, 
@@ -120,28 +107,6 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start', 
         marginLeft: 20, 
         marginBottom: 15
-    },
-    castImage:{
-        width: 120, 
-        height: 120,
-        marginBottom: 10,
-        borderRadius: 100,
-        borderWidth:1, 
-        borderColor: 'white'
-    },
-    castName: {
-        fontWeight: 'bold',
-        color: 'white',
-        fontSize: 15,
-        textAlign: 'center'
-    },
-    similarMovieImageStyle: {
-        width: 115,
-        height: 235,
-        borderRadius: 20,
-        margin: 5,
-        borderWidth: 1,
-        borderColor: 'lightgrey'
     }
 })
 
