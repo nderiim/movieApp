@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, FlatList } from 'react-native'
 import MovieCard from './MovieCard';
 
-const CategorieCard = ({ movies, categoryName }) => {
+const CategorieCard = ({ navigation, movies, categoryName }) => {
     return (
         <View>
             <Text style={styles.header}>{categoryName}</Text>
@@ -13,6 +13,7 @@ const CategorieCard = ({ movies, categoryName }) => {
                 data={movies}
                 renderItem={({item}) => 
                     <MovieCard
+                        navigation={navigation}
                         title={item.title}
                         imageUri={item.imageUri}
                         genre={item.genre}
