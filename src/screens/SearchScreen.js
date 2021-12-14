@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native'
+import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
 import { movies } from '../movies';
@@ -10,8 +10,6 @@ const SearchScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-            
                 <View style={styles.searchContainer}>
                     <TextInput
                         autoCorrect={false}
@@ -29,7 +27,8 @@ const SearchScreen = ({ navigation }) => {
 
                 {clicked &&
                     <FlatList
-                        numColumns={'3'}
+                        style={{ alignSelf: 'center' }}
+                        numColumns={'2'}
                         showsVerticalScrollIndicator={false}
                         keyExtractor={() => Math.random() * 10}
                         data={movies}
@@ -48,7 +47,6 @@ const SearchScreen = ({ navigation }) => {
                         }
                     />
                 }
-            </ScrollView>           
         </SafeAreaView>
     )
 }

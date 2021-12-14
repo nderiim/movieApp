@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Text, StyleSheet, Image, Dimensions, FlatList, View, SafeAreaView } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler';
+import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView } from 'react-native'
 import CastCard from '../components/CastCard'
 import MovieCard from '../components/MovieCard';
 import { casts } from '../cast'

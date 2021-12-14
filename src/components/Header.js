@@ -2,7 +2,6 @@ import React from 'react'
 import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { SvgCssUri } from 'react-native-svg';
 import { AntDesign } from '@expo/vector-icons'; 
-import MainPoster from './MainPoster';
 
 
 const Header = ({ navigation }) => {
