@@ -1,5 +1,5 @@
-import React from 'react'
-import { Text, StyleSheet, Image, Dimensions, FlatList } from 'react-native'
+import React, { useState, useRef } from 'react'
+import { Text, StyleSheet, Image, Dimensions, FlatList, View, SafeAreaView } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import CastCard from '../components/CastCard'
 import MovieCard from '../components/MovieCard';
@@ -13,12 +13,20 @@ const MovieDetailsScreen = ({ navigation }) => {
     const released = navigation.getParam('released')
     const description = navigation.getParam('description')
     const imdbRating = navigation.getParam('imdbRating')
+    const [imageHeight, setImageHeight] = useState(false)
+    const scroll = useRef()
+
+    const goToTop = () => {
+        scroll.current.scrollTo({x: 0, y: 0, animated: true})
+    }
 
     return (
-            <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#2D6176'}}>
+        <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
+            <ScrollView ref={scroll} showsVerticalScrollIndicator={false} >
                 <Image 
-                    style={styles.imageStyle}
+                    style={[styles.imageStyle, { height: imageHeight ? 600 : Dimensions.get('window').height / 2}] }
                     source={{uri: imageUri}}
+                    onTouchEnd={() => setImageHeight(!imageHeight)}
                 />
 
                 <Text style={styles.header}>{title}</Text>
@@ -41,10 +49,9 @@ const MovieDetailsScreen = ({ navigation }) => {
                     data={casts}
                     renderItem={({item}) => <CastCard name={item.name} character={item.character} imageUri={item.profile_path} />}
                 />
-                
+
                 <Text style={styles.castHeader}>Similar Movies</Text>
                 <FlatList
-                    style={{marginBottom: 30}}
                     showsHorizontalScrollIndicator={false}
                     horizontal
                     keyExtractor={() => Math.random() * 10}
@@ -60,11 +67,12 @@ const MovieDetailsScreen = ({ navigation }) => {
                             description={item.description}
                             imdbID={item.imdbID}
                             imdbRating={item.imdbRating}
+                            goToTop={goToTop}
                         />
                     }
                 />
-
             </ScrollView>
+        </SafeAreaView>
     )
 }
 
@@ -72,7 +80,6 @@ const styles = StyleSheet.create({
     imageStyle: {
         alignSelf: 'center',
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height / 2,
     },
     header: {
         fontSize: 30, 
@@ -109,6 +116,8 @@ const styles = StyleSheet.create({
         marginBottom: 15
     }
 })
+
+MovieDetailsScreen.navigationOptions = () => { return { headerShown: false } }
 
 export default MovieDetailsScreen
 

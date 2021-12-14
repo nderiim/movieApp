@@ -2,11 +2,12 @@ import React from 'react'
 import { View, TouchableOpacity, StyleSheet } from 'react-native'
 import { SvgCssUri } from 'react-native-svg';
 import { AntDesign } from '@expo/vector-icons'; 
+import MainPoster from './MainPoster';
 
 
 const Header = ({ navigation }) => {
     return (
-        <View style={{ flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row', borderBottomColor: 'lightgrey', borderBottomWidth: '0.2'}}>
             <SvgCssUri
                 style={styles.logo}
                 uri="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg"

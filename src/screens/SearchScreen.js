@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
+import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
 import { movies } from '../movies';
@@ -9,47 +9,47 @@ const SearchScreen = ({ navigation }) => {
     const [clicked, setClicked] = useState(false)
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false} style={{backgroundColor: '#2D6176'}}>
-        
-            <View style={styles.searchContainer}>
-                <TextInput
-                    autoCorrect={false}
-                    autoCapitalize={'none'}
-                    value={keyword}
-                    style={styles.input} 
-                    onChangeText={setKeyword}
-                    placeholder='Search Movie'
-                    placeholderTextColor='white'
-                />
-                <TouchableOpacity onPress={() => setClicked(!clicked)}>
-                    <AntDesign name="search1" size={35} color="lightgrey" />
-                </TouchableOpacity>
-            </View>
+        <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+            
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        autoCorrect={false}
+                        autoCapitalize={'none'}
+                        value={keyword}
+                        style={styles.input} 
+                        onChangeText={setKeyword}
+                        placeholder='Search Movie'
+                        placeholderTextColor='white'
+                    />
+                    <TouchableOpacity onPress={() => setClicked(!clicked)}>
+                        <AntDesign name="search1" size={35} color="lightgrey" />
+                    </TouchableOpacity>
+                </View>
 
-            {clicked &&
-                <FlatList
-                    numColumns={'3'}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={() => Math.random() * 10}
-                    data={movies}
-                    renderItem={({item}) => 
-                        <MovieCard
-                            navigation={navigation}
-                            title={item.title}
-                            imageUri={item.imageUri}
-                            genre={item.genre}
-                            released={item.released}
-                            type={item.type}
-                            description={item.description}
-                            imdbID={item.imdbID}
-                            imdbRating={item.imdbRating}
-                        />
-                    }
-                />
-            }
-
-            <View style={{marginBottom: 20}}/>
-        </ScrollView>           
+                {clicked &&
+                    <FlatList
+                        numColumns={'3'}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={() => Math.random() * 10}
+                        data={movies}
+                        renderItem={({item}) => 
+                            <MovieCard
+                                navigation={navigation}
+                                title={item.title}
+                                imageUri={item.imageUri}
+                                genre={item.genre}
+                                released={item.released}
+                                type={item.type}
+                                description={item.description}
+                                imdbID={item.imdbID}
+                                imdbRating={item.imdbRating}
+                            />
+                        }
+                    />
+                }
+            </ScrollView>           
+        </SafeAreaView>
     )
 }
 
@@ -71,6 +71,8 @@ const styles = StyleSheet.create({
         fontSize: 18
     }
 })
+
+SearchScreen.navigationOptions = () => { return { headerShown: false } }
 
 export default SearchScreen
 

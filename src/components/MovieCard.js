@@ -1,19 +1,13 @@
 import React from 'react'
 import { TouchableOpacity, Image, StyleSheet } from 'react-native'
 
-const MovieCard = ({navigation, title, imageUri, genre, released, type, description, imdbID, imdbRating}) => {
+const MovieCard = ({navigation, title, imageUri, genre, released, type, description, imdbID, imdbRating, goToTop }) => {
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('MovieDetails', 
-            { 
-                title, 
-                imageUri, 
-                genre, 
-                released, 
-                type, 
-                description, 
-                imdbID, 
-                imdbRating 
-            })}>
+        <TouchableOpacity onPress={() => { 
+                goToTop && goToTop()
+                navigation.navigate('MovieDetails', { title, imageUri, genre, released, type, description, imdbID, imdbRating })
+            } 
+        }>
             <Image 
                 style={styles.imageStyle}
                 source={{uri: imageUri}}

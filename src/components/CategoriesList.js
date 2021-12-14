@@ -5,7 +5,7 @@ import { movies } from '../movies';
 
 const CategoriesList = ({navigation}) => {
     return (
-        <View style={{marginBottom: 30}}>
+        <View>
             <CategorieCard navigation={navigation} movies={ movies } categoryName={'Category Name'}/>
 
             <CategorieCard navigation={navigation} movies={ movies } categoryName={'Category Name'}/>
