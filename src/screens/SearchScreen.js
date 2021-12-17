@@ -3,10 +3,76 @@ import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView }
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
 import { movies } from '../movies';
+import axios from 'axios';
+
+const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
 const SearchScreen = ({ navigation }) => {
     const [keyword, setKeyword] = useState('')
-    const [clicked, setClicked] = useState(false)
+    const [movieResult, setMovieResult] = useState([])
+
+    const searchMovie = async (keyword) => {
+        try {
+            const getMovie = await instanceTMDB.get('/search/movie/?query=' + keyword)
+            let genres = await instanceTMDB.get('/genre/movie/list');
+    
+            let searchResult = getMovie.data.results
+            for (let i = 0; i < searchResult.length; i++) {
+                if(/null$/.test(searchResult[i].poster_path)){
+                    searchResult.splice(i, 1)
+                    i--
+                }
+            }
+
+            for (let i = 0; i < searchResult.length; i++) {
+                searchResult[i].image = 'https://image.tmdb.org/t/p/w500' + searchResult[i].poster_path
+                for (let j = 0; j < genres.data.genres.length; j++) {
+                    if (genres.data.genres[j].id == searchResult[i].genre_ids[0]) {
+                        searchResult[i].genre = genres.data.genres[j].name
+                    }
+                }
+            }
+
+            for (let i = 0; i < searchResult.length; i++) {
+                try {
+                    var trailer = await instanceTMDB.get(`/movie/${searchResult[i].id}/videos`)
+                    for (let j = 0; j < trailer.data.results.length; j++) {
+                        if (trailer.data.results[j].type == "Trailer") {
+                            searchResult[i].video = trailer.data.results[j].key
+                            break
+                        }
+                    }
+                } catch (error) {
+                    console.log("No video found!")
+                }
+            }
+
+            try {
+                for (let i = 0; i < searchResult.length; i++) {
+                    var cast = await instanceTMDB.get(`movie/${searchResult[i].id}/credits`)
+                    searchResult[i].cast = []
+                    for (let j = 0; j < 10; j++) {
+                        searchResult[i].cast[j] = cast.data.cast[j]
+                        if (searchResult[i].cast[j].profile_path == null) {
+                            searchResult[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                        } else {
+                            searchResult[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + searchResult[i].cast[j].profile_path
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Cast failed!!')
+            }
+            
+            // searchResult.map(e => console.log('e: ' + e))
+            setMovieResult(searchResult)
+
+        } catch (error) {
+            console.log('No results!')
+        }
+    }
+    
+    // movieResult.map(e => console.log(e.cast))
 
     return (
         <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
@@ -20,33 +86,34 @@ const SearchScreen = ({ navigation }) => {
                         placeholder='Search Movie'
                         placeholderTextColor='white'
                     />
-                    <TouchableOpacity onPress={() => setClicked(!clicked)}>
+                    <TouchableOpacity onPress={() => searchMovie(keyword)}>
                         <AntDesign name="search1" size={35} color="lightgrey" />
                     </TouchableOpacity>
                 </View>
 
-                {clicked &&
-                    <FlatList
-                        style={{ alignSelf: 'center' }}
-                        numColumns={'2'}
-                        showsVerticalScrollIndicator={false}
-                        keyExtractor={() => Math.random() * 10}
-                        data={movies}
-                        renderItem={({item}) => 
-                            <MovieCard
-                                navigation={navigation}
-                                title={item.title}
-                                imageUri={item.imageUri}
-                                genre={item.genre}
-                                released={item.released}
-                                type={item.type}
-                                description={item.description}
-                                imdbID={item.imdbID}
-                                imdbRating={item.imdbRating}
-                            />
-                        }
-                    />
-                }
+                <FlatList
+                    style={{ alignSelf: 'center' }}
+                    numColumns={'2'}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={() => Math.random() * 10}
+                    data={movieResult}
+                    renderItem={({item}) => 
+                        <MovieCard
+                            navigation={navigation}
+                            id={item.id}
+                            title={item.title}
+                            imageUri={item.image}
+                            genre={item.genre}
+                            released={item.release_date}
+                            type={item.type}
+                            description={item.overview}
+                            imdbID={item.imdbID}
+                            imdbRating={item.vote_average}
+                            video={item.video}
+                            cast={item.cast}
+                        />
+                    }
+                />
         </SafeAreaView>
     )
 }

@@ -1,23 +1,82 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView } from 'react-native'
 import CastCard from '../components/CastCard'
 import MovieCard from '../components/MovieCard';
-import { casts } from '../cast'
 import { movies } from '../movies';
+import YoutubePlayer from 'react-native-youtube-iframe';
+import axios from "axios"
+
+const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
 const MovieDetailsScreen = ({ navigation }) => {
+    const id = navigation.getParam('id')
     const title = navigation.getParam('title')
     const imageUri = navigation.getParam('imageUri')
     const genre = navigation.getParam('genre')
     const released = navigation.getParam('released')
     const description = navigation.getParam('description')
     const imdbRating = navigation.getParam('imdbRating')
+    const casts = navigation.getParam('cast')
+    const video = navigation.getParam('video')
     const [imageHeight, setImageHeight] = useState(false)
     const scroll = useRef()
+    const [similarMovies, setSimilarMovies] = useState([])
 
     const goToTop = () => {
         scroll.current.scrollTo({x: 0, y: 0, animated: true})
     }
+
+    const fetchSimilarMovies = async () => {
+        //#region 
+        const response = await instanceTMDB.get(`/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`);
+        let genres = await instanceTMDB.get('/genre/movie/list');
+        let fetchedMovies = []
+        for (let i = 0; i < 10; i++) {
+            fetchedMovies[i] = response.data.results[i]
+            fetchedMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.data.results[i].poster_path
+            fetchedMovies[i].genre = ''
+            for (let j = 0; j < genres.data.genres.length; j++) {
+                for (let z = 0; z < genres.data.genres.length; z++) {
+                    if (fetchedMovies[i].genre_ids[j] == genres.data.genres[z].id) {
+                        fetchedMovies[i].genre += genres.data.genres[z].name + (j != fetchedMovies[i].genre_ids.length - 1 ? ', ' : '')
+                    }
+                }
+            }
+        }
+        
+        for (let i = 0; i < fetchedMovies.length; i++) {
+            try {
+                var trailer = await instanceTMDB.get(`/movie/${fetchedMovies[i].id}/videos`)
+                for (let j = 0; j < trailer.data.results.length; j++) {
+                    if (trailer.data.results[j].type == "Trailer") {
+                        fetchedMovies[i].video = trailer.data.results[j].key
+                        break
+                    }
+                }
+            } catch (error) {
+                console.log("No video found!")
+            }
+        }
+
+        for (let i = 0; i < fetchedMovies.length; i++) {
+            var cast = await instanceTMDB.get(`movie/${fetchedMovies[i].id}/credits`)
+            fetchedMovies[i].cast = []
+            for (let j = 0; j < 10; j++) {
+                fetchedMovies[i].cast[j] = cast.data.cast[j]
+                if (fetchedMovies[i].cast[j].profile_path == null) {
+                    fetchedMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                } else {
+                    fetchedMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMovies[i].cast[j].profile_path
+                }
+            }
+        }
+        setSimilarMovies(fetchedMovies)
+        //#endregion
+    }
+    
+    useEffect(() => { fetchSimilarMovies() }, [id])
+
+    // console.log(similarMovies)
 
     return (
         <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
@@ -29,15 +88,16 @@ const MovieDetailsScreen = ({ navigation }) => {
                 />
 
                 <Text style={styles.header}>{title}</Text>
-                <Text style={styles.length}>{genre}</Text>
-                <Text style={styles.length}>Rating: {imdbRating}</Text>
+                <Text style={[styles.length, {textAlign: 'center'}]}>{genre}</Text>
+                <Text style={styles.length}>Rating: {imdbRating.toFixed(1.5)}</Text>
                 <Text style={{marginHorizontal: 10, fontSize: 20, textAlign: 'center', color: 'white',}}>{description}</Text>
                 <Text style={styles.releaseDate}>Release Date: {released}</Text>
                 
                 <Text style={styles.castHeader}>Trailer</Text>
-                <Image
-                    style={{marginBottom: 20, width: '100%', height: 250}}
-                    source={{uri: 'https://overclik.com/wp-content/uploads/2021/11/SPIDER-MAN-No-Way-Home-Trailer-2021-2048x1152.jpg'}}
+                <YoutubePlayer
+                    height={210}
+                    play={false}
+                    videoId={video}
                 />
 
                 <Text style={styles.castHeader}>Top Cast</Text>
@@ -46,7 +106,7 @@ const MovieDetailsScreen = ({ navigation }) => {
                     horizontal
                     keyExtractor={() => Math.random() * 10}
                     data={casts}
-                    renderItem={({item}) => <CastCard name={item.name} character={item.character} imageUri={item.profile_path} />}
+                    renderItem={({item}) => <CastCard name={item.name} character={item.character} imageUri={item.profile_path}/>}
                 />
 
                 <Text style={styles.castHeader}>Similar Movies</Text>
@@ -54,18 +114,20 @@ const MovieDetailsScreen = ({ navigation }) => {
                     showsHorizontalScrollIndicator={false}
                     horizontal
                     keyExtractor={() => Math.random() * 10}
-                    data={movies}
+                    data={similarMovies}
                     renderItem={({item}) => 
                         <MovieCard
                             navigation={navigation}
+                            id={item.id}
                             title={item.title}
-                            imageUri={item.imageUri}
+                            imageUri={item.image}
                             genre={item.genre}
-                            released={item.released}
+                            released={item.release_date}
                             type={item.type}
-                            description={item.description}
-                            imdbID={item.imdbID}
-                            imdbRating={item.imdbRating}
+                            description={item.overview}
+                            imdbRating={item.vote_average}
+                            video={item.video}
+                            cast={item.cast}
                             goToTop={goToTop}
                         />
                     }
