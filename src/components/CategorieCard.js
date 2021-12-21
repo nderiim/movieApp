@@ -5,7 +5,7 @@ import MovieCard from './MovieCard';
 const CategorieCard = ({ navigation, movies, categoryName }) => {
     return (
         <View>
-            <Text style={styles.header}>{categoryName}</Text>
+            <View style={styles.headerView}><Text style={styles.header}>{ categoryName }</Text></View>
             <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
@@ -14,14 +14,16 @@ const CategorieCard = ({ navigation, movies, categoryName }) => {
                 renderItem={({item}) => 
                     <MovieCard
                         navigation={navigation}
-                        title={item.title}
-                        imageUri={item.imageUri}
+                        id={item.id}
+                        title={categoryName == 'Popular Tv Shows' ? item.name : item.title}
+                        imageUri={item.image}
                         genre={item.genre}
-                        released={item.released}
+                        released={item.release_date}
                         type={item.type}
-                        description={item.description}
-                        imdbID={item.imdbID}
-                        imdbRating={item.imdbRating}
+                        description={item.overview}
+                        imdbRating={item.vote_average}
+                        video={item.video}
+                        cast={item.cast}
                     />
                 }
             />
@@ -33,17 +35,16 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'white',
-        marginVertical: 10,
-        marginLeft: 10
+        color: 'white'
     },
-    imageStyle: {
-        width: 115,
-        height: 235,
-        borderRadius: 20,
-        margin: 5,
-        borderWidth: 1,
-        borderColor: 'lightgrey'
+    headerView: { 
+        margin: 10, 
+        padding: 10, 
+        paddingBottom: 5, 
+        borderBottomColor: 'lightgrey', 
+        borderBottomWidth: 3, 
+        borderBottomStartRadius: 10,
+        borderBottomEndRadius: 10
     }
 })
 

@@ -30,26 +30,26 @@ const MovieDetailsScreen = ({ navigation }) => {
         //#region 
         const response = await instanceTMDB.get(`/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`);
         let genres = await instanceTMDB.get('/genre/movie/list');
-        let fetchedMovies = []
+        let fetchedSimilarMovies = []
         for (let i = 0; i < 10; i++) {
-            fetchedMovies[i] = response.data.results[i]
-            fetchedMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.data.results[i].poster_path
-            fetchedMovies[i].genre = ''
+            fetchedSimilarMovies[i] = response.data.results[i]
+            fetchedSimilarMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.data.results[i].poster_path
+            fetchedSimilarMovies[i].genre = ''
             for (let j = 0; j < genres.data.genres.length; j++) {
                 for (let z = 0; z < genres.data.genres.length; z++) {
-                    if (fetchedMovies[i].genre_ids[j] == genres.data.genres[z].id) {
-                        fetchedMovies[i].genre += genres.data.genres[z].name + (j != fetchedMovies[i].genre_ids.length - 1 ? ', ' : '')
+                    if (fetchedSimilarMovies[i].genre_ids[j] == genres.data.genres[z].id) {
+                        fetchedSimilarMovies[i].genre += genres.data.genres[z].name + (j != fetchedSimilarMovies[i].genre_ids.length - 1 ? ', ' : '')
                     }
                 }
             }
         }
         
-        for (let i = 0; i < fetchedMovies.length; i++) {
+        for (let i = 0; i < fetchedSimilarMovies.length; i++) {
             try {
-                var trailer = await instanceTMDB.get(`/movie/${fetchedMovies[i].id}/videos`)
+                var trailer = await instanceTMDB.get(`/movie/${fetchedSimilarMovies[i].id}/videos`)
                 for (let j = 0; j < trailer.data.results.length; j++) {
                     if (trailer.data.results[j].type == "Trailer") {
-                        fetchedMovies[i].video = trailer.data.results[j].key
+                        fetchedSimilarMovies[i].video = trailer.data.results[j].key
                         break
                     }
                 }
@@ -57,26 +57,25 @@ const MovieDetailsScreen = ({ navigation }) => {
                 console.log("No video found!")
             }
         }
-
-        for (let i = 0; i < fetchedMovies.length; i++) {
-            var cast = await instanceTMDB.get(`movie/${fetchedMovies[i].id}/credits`)
-            fetchedMovies[i].cast = []
+        
+        for (let i = 0; i < fetchedSimilarMovies.length; i++) {
+            var cast = await instanceTMDB.get(`movie/${fetchedSimilarMovies[i].id}/credits`)
+            fetchedSimilarMovies[i].cast = []
             for (let j = 0; j < 10; j++) {
-                fetchedMovies[i].cast[j] = cast.data.cast[j]
-                if (fetchedMovies[i].cast[j].profile_path == null) {
-                    fetchedMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                fetchedSimilarMovies[i].cast[j] = cast.data.cast[j]
+                if (fetchedSimilarMovies[i].cast[j].profile_path == null) {
+                    fetchedSimilarMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
                 } else {
-                    fetchedMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMovies[i].cast[j].profile_path
+                    fetchedSimilarMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedSimilarMovies[i].cast[j].profile_path
                 }
             }
         }
-        setSimilarMovies(fetchedMovies)
+        
+        setSimilarMovies(fetchedSimilarMovies)
         //#endregion
     }
     
     useEffect(() => { fetchSimilarMovies() }, [id])
-
-    // console.log(similarMovies)
 
     return (
         <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
@@ -89,13 +88,13 @@ const MovieDetailsScreen = ({ navigation }) => {
 
                 <Text style={styles.header}>{title}</Text>
                 <Text style={[styles.length, {textAlign: 'center'}]}>{genre}</Text>
-                <Text style={styles.length}>Rating: {imdbRating.toFixed(1.5)}</Text>
+                <Text style={styles.length}>Rating: {imdbRating ? imdbRating.toFixed(1.5) : 'No rating yet!'}</Text>
                 <Text style={{marginHorizontal: 10, fontSize: 20, textAlign: 'center', color: 'white',}}>{description}</Text>
                 <Text style={styles.releaseDate}>Release Date: {released}</Text>
                 
                 <Text style={styles.castHeader}>Trailer</Text>
                 <YoutubePlayer
-                    height={210}
+                    height={230}
                     play={false}
                     videoId={video}
                 />
@@ -106,7 +105,7 @@ const MovieDetailsScreen = ({ navigation }) => {
                     horizontal
                     keyExtractor={() => Math.random() * 10}
                     data={casts}
-                    renderItem={({item}) => <CastCard name={item.name} character={item.character} imageUri={item.profile_path}/>}
+                    renderItem={({item}) => item != undefined && <CastCard name={item.name} character={item.character} imageUri={item.profile_path}/>}
                 />
 
                 <Text style={styles.castHeader}>Similar Movies</Text>
@@ -146,8 +145,7 @@ const styles = StyleSheet.create({
         fontSize: 30, 
         fontWeight: 'bold',
         color: 'white',
-        marginTop: 10,
-        marginLeft: 10,
+        margin: 10,
         textAlign:'center'    
     },
     length: {
