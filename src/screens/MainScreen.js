@@ -44,15 +44,19 @@ const MainScreen = ({ navigation }) => {
         }
 
         for (let i = 0; i < fetchedMovies.length; i++) {
-            var cast = await instanceTMDB.get(`movie/${fetchedMovies[i].id}/credits`)
-            fetchedMovies[i].cast = []
-            for (let j = 0; j < 10; j++) {
-                fetchedMovies[i].cast[j] = cast.data.cast[j]
-                if (fetchedMovies[i].cast[j].profile_path == null) {
-                    fetchedMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
-                } else {
-                    fetchedMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMovies[i].cast[j].profile_path
+            try {
+                var cast = await instanceTMDB.get(`movie/${fetchedMovies[i].id}/credits`)
+                fetchedMovies[i].cast = []
+                for (let j = 0; j < 10; j++) {
+                    fetchedMovies[i].cast[j] = cast.data.cast[j]
+                    if (fetchedMovies[i].cast[j].profile_path == null) {
+                        fetchedMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                    } else {
+                        fetchedMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMovies[i].cast[j].profile_path
+                    }
                 }
+            } catch (error) {
+                console.log('Cast fetch failed!')
             }
         }
         setMovies(fetchedMovies)

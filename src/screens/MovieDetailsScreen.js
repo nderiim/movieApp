@@ -105,7 +105,7 @@ const MovieDetailsScreen = ({ navigation }) => {
                     horizontal
                     keyExtractor={() => Math.random() * 10}
                     data={casts}
-                    renderItem={({item}) => item != undefined && <CastCard name={item.name} character={item.character} imageUri={item.profile_path}/>}
+                    renderItem={({item}) => item != undefined && <CastCard name={item.name && item.name} character={item.character && item.character} imageUri={item.profile_path && item.profile_path}/>}
                 />
 
                 <Text style={styles.castHeader}>Similar Movies</Text>

@@ -44,21 +44,27 @@ const CategoriesList = ({navigation}) => {
         }
         
         for (let i = 0; i < fetchedUpcomingMovies.length; i++) {
-            var cast = await instanceTMDB.get(`movie/${fetchedUpcomingMovies[i].id}/credits`)
-            fetchedUpcomingMovies[i].cast = []
-            for (let j = 0; j < 10; j++) {
-                fetchedUpcomingMovies[i].cast[j] = cast.data.cast[j]
-                if (fetchedUpcomingMovies[i].cast[j].profile_path == null) {
-                    fetchedUpcomingMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
-                } else {
-                    fetchedUpcomingMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedUpcomingMovies[i].cast[j].profile_path
+            try {
+                var cast = await instanceTMDB.get(`movie/${fetchedUpcomingMovies[i].id}/credits`)
+                fetchedUpcomingMovies[i].cast = []
+                for (let j = 0; j < 10; j++) {
+                    fetchedUpcomingMovies[i].cast[j] = cast.data.cast[j]
+                    if (fetchedUpcomingMovies[i].cast[j].profile_path == null || fetchedUpcomingMovies[i].cast[j].profile_path == undefined) {
+                        fetchedUpcomingMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                    } else {
+                        fetchedUpcomingMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedUpcomingMovies[i].cast[j].profile_path
+                    }
                 }
+            } catch (error) {
+                console.log('Cast fetch failed!')
             }
+            
         }
+
         setUpcomingMovies(fetchedUpcomingMovies)
         //#endregion
     }
-
+    
     const fetchMoviesByReleaseYear = async () => {
         //#region
         const response = await instanceTMDB.get(`/discover/movie?primary_release_year=${currentYear}`);
@@ -92,15 +98,19 @@ const CategoriesList = ({navigation}) => {
         }
         
         for (let i = 0; i < fetchedMoviesByYear.length; i++) {
-            var cast = await instanceTMDB.get(`movie/${fetchedMoviesByYear[i].id}/credits`)
-            fetchedMoviesByYear[i].cast = []
-            for (let j = 0; j < 10; j++) {
-                fetchedMoviesByYear[i].cast[j] = cast.data.cast[j]
-                if (fetchedMoviesByYear[i].cast[j].profile_path == null) {
-                    fetchedMoviesByYear[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
-                } else {
-                    fetchedMoviesByYear[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMoviesByYear[i].cast[j].profile_path
+            try {
+                var cast = await instanceTMDB.get(`movie/${fetchedMoviesByYear[i].id}/credits`)
+                fetchedMoviesByYear[i].cast = []
+                for (let j = 0; j < 10; j++) {
+                    fetchedMoviesByYear[i].cast[j] = cast.data.cast[j]
+                    if (fetchedMoviesByYear[i].cast[j].profile_path == null || fetchedMoviesByYear[i].cast[j].profile_path == undefined) {
+                        fetchedMoviesByYear[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                    } else {
+                        fetchedMoviesByYear[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedMoviesByYear[i].cast[j].profile_path
+                    }
                 }
+            } catch (error) {
+                console.log('Cast fetch failed!')
             }
         }
         setMoviesByYear(fetchedMoviesByYear)
@@ -137,7 +147,6 @@ const CategoriesList = ({navigation}) => {
                 }
             } catch (error) {
                 console.log('Video fetch -> error.status_message: ' + error.status_message)
-                console.log('Video fetch -> error.status_code: ' + error.status_code)
             }
         }
 
@@ -154,8 +163,7 @@ const CategoriesList = ({navigation}) => {
                     }
                 }
             } catch (error) {
-                console.log('Cast fetch -> error.status_message: ' + error.status_message)
-                console.log('Cast fetch -> error.status_code: ' + error.status_code)
+                console.log('Cast fetch failed!')
             }
         }        
 
