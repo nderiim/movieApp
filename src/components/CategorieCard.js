@@ -1,33 +1,39 @@
 import React from 'react'
-import { View, Text, StyleSheet, FlatList } from 'react-native'
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native'
 import MovieCard from './MovieCard';
 
 const CategorieCard = ({ navigation, movies, categoryName }) => {
     return (
-        <View>
+        <>
             <View style={styles.headerView}><Text style={styles.header}>{ categoryName }</Text></View>
-            <FlatList
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                keyExtractor={() => Math.random() * 10}
-                data={movies}
-                renderItem={({item}) => 
-                    <MovieCard
-                        navigation={navigation}
-                        id={item.id}
-                        title={categoryName == 'Popular Tv Shows' ? item.name : item.title}
-                        imageUri={item.image}
-                        genre={item.genre}
-                        released={item.release_date}
-                        type={item.type}
-                        description={item.overview}
-                        imdbRating={item.vote_average}
-                        video={item.video}
-                        cast={item.cast}
+            {
+                movies.length != 0 ?
+                <View>
+                    <FlatList
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        keyExtractor={() => Math.random() * 10}
+                        data={movies}
+                        renderItem={({item}) => 
+                            <MovieCard
+                                navigation={navigation}
+                                id={item.id}
+                                title={categoryName == 'Popular Tv Shows' ? item.name : item.title}
+                                imageUri={item.image}
+                                genre={item.genre}
+                                released={item.release_date}
+                                type={item.type}
+                                description={item.overview}
+                                imdbRating={item.vote_average}
+                                video={item.video}
+                                cast={item.cast}
+                            />
+                        }
                     />
-                }
-            />
-        </View>
+                </View>
+                : <ActivityIndicator size={'large'} color={'lightgrey'} style={{marginVertical: 15,flex: 1}}/>
+            }
+        </>
     )
 }
 

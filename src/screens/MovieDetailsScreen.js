@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView } from 'react-native'
+import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
 import CastCard from '../components/CastCard'
 import MovieCard from '../components/MovieCard';
 import YoutubePlayer from 'react-native-youtube-iframe';
@@ -96,27 +96,31 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                 />
 
                 <Text style={styles.castHeader}>Similar Movies</Text>
-                <FlatList
-                    showsHorizontalScrollIndicator={false}
-                    horizontal
-                    keyExtractor={() => Math.random() * 10}
-                    data={similarMovies}
-                    renderItem={({item}) => 
-                        <MovieCard
-                            navigation={navigation}
-                            id={item.id}
-                            title={item.title}
-                            imageUri={item.image}
-                            genre={item.genre}
-                            released={item.release_date}
-                            type={item.type}
-                            description={item.overview}
-                            imdbRating={item.vote_average}
-                            video={item.video}
-                            cast={item.cast}
-                        />
-                    }
-                />
+                {
+                    similarMovies.length != 0 ? 
+                    <FlatList
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        keyExtractor={() => Math.random() * 10}
+                        data={similarMovies}
+                        renderItem={({item}) => 
+                            <MovieCard
+                                navigation={navigation}
+                                id={item.id}
+                                title={item.title}
+                                imageUri={item.image}
+                                genre={item.genre}
+                                released={item.release_date}
+                                type={item.type}
+                                description={item.overview}
+                                imdbRating={item.vote_average}
+                                video={item.video}
+                                cast={item.cast}
+                            />
+                        }
+                    />
+                    :<ActivityIndicator size={'large'} color={'lightgrey'} style={{marginVertical: 20,flex: 1}}/>
+                }
             </ScrollView>
         </SafeAreaView>
     )

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
@@ -9,7 +9,8 @@ const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themovi
 const SearchScreen = ({ navigation }) => {
     const [keyword, setKeyword] = useState('')
     const [movieResult, setMovieResult] = useState([])
-
+    const [showActivityIndicator, setShowActivityIndicator] = useState(false)
+    
     ///search/multi?include_adult=false&query=${keyword}
     const searchMovie = async (keyword) => {
         try {
@@ -85,34 +86,43 @@ const SearchScreen = ({ navigation }) => {
                             placeholder='Search Movie'
                             placeholderTextColor='white'
                         />
-                        <TouchableOpacity onPress={() => searchMovie(keyword)}>
+                        <TouchableOpacity onPress={() => {
+                                setShowActivityIndicator(true)
+                                setMovieResult([])
+                                searchMovie(keyword)
+                            }
+                        }>
                             <AntDesign name="search1" size={35} color="lightgrey" />
                         </TouchableOpacity>
                     </View>
 
-                    <FlatList
-                        style={{ alignSelf: 'center' }}
-                        numColumns={'2'}
-                        showsVerticalScrollIndicator={false}
-                        keyExtractor={() => Math.random() * 10}
-                        data={movieResult}
-                        renderItem={({item}) => 
-                            <MovieCard
-                                navigation={navigation}
-                                id={item.id && item.id}
-                                title={item.title && item.title}
-                                imageUri={item.image && item.image}
-                                genre={item.genre && item.genre}
-                                released={item.release_date && item.release_date}
-                                type={item.type && item.type}
-                                description={item.overview && item.overview}
-                                imdbID={item.imdbID && item.imdbID}
-                                imdbRating={item.vote_average && item.vote_average}
-                                video={item.video && item.video}
-                                cast={item.cast && item.cast}
-                            />
-                        }
-                    />
+                    {
+                        movieResult.length == 0 && showActivityIndicator && keyword.length != 0
+                        ? <ActivityIndicator size={'large'} color={'lightgrey'} style={{flex:1}}/>
+                        :<FlatList
+                            style={{ alignSelf: 'center' }}
+                            numColumns={'2'}
+                            showsVerticalScrollIndicator={false}
+                            keyExtractor={() => Math.random() * 10}
+                            data={movieResult}
+                            renderItem={({item}) => 
+                                <MovieCard
+                                    navigation={navigation}
+                                    id={item.id && item.id}
+                                    title={item.title && item.title}
+                                    imageUri={item.image && item.image}
+                                    genre={item.genre && item.genre}
+                                    released={item.release_date && item.release_date}
+                                    type={item.type && item.type}
+                                    description={item.overview && item.overview}
+                                    imdbID={item.imdbID && item.imdbID}
+                                    imdbRating={item.vote_average && item.vote_average}
+                                    video={item.video && item.video}
+                                    cast={item.cast && item.cast}
+                                />
+                            }
+                        />
+                    }
             </SafeAreaView>
     </>
     )

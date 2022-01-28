@@ -67,7 +67,7 @@ const MainScreen = ({ navigation }) => {
     return (
         <>
             {
-                movies ? 
+                movies.length != 0 ? 
                 <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
                     
                     
@@ -78,7 +78,7 @@ const MainScreen = ({ navigation }) => {
                         <CategoriesList navigation={navigation} />
                     </ScrollView>
                 </SafeAreaView>
-                : <ActivityIndicator size={'large'} color={'#2D6176'}/>
+                : <ActivityIndicator size={'large'} color={'lightgrey'} style={{backgroundColor: '#2D6176',flex: 1}}/>
             }
         </>
     )
