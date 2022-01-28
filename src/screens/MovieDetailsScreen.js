@@ -2,29 +2,16 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView } from 'react-native'
 import CastCard from '../components/CastCard'
 import MovieCard from '../components/MovieCard';
-import { movies } from '../movies';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import axios from "axios"
 
 const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
-const MovieDetailsScreen = ({ navigation }) => {
-    const id = navigation.getParam('id')
-    const title = navigation.getParam('title')
-    const imageUri = navigation.getParam('imageUri')
-    const genre = navigation.getParam('genre')
-    const released = navigation.getParam('released')
-    const description = navigation.getParam('description')
-    const imdbRating = navigation.getParam('imdbRating')
-    const casts = navigation.getParam('cast')
-    const video = navigation.getParam('video')
+const MovieDetailsScreen = ({ route, navigation }) => {
+    const { id, title, imageUri, genre, released, description, imdbRating, cast, video } = route.params;
     const [imageHeight, setImageHeight] = useState(false)
     const scroll = useRef()
     const [similarMovies, setSimilarMovies] = useState([])
-
-    const goToTop = () => {
-        scroll.current.scrollTo({x: 0, y: 0, animated: true})
-    }
 
     const fetchSimilarMovies = async () => {
         //#region 
@@ -104,7 +91,7 @@ const MovieDetailsScreen = ({ navigation }) => {
                     showsHorizontalScrollIndicator={false}
                     horizontal
                     keyExtractor={() => Math.random() * 10}
-                    data={casts}
+                    data={cast}
                     renderItem={({item}) => item != undefined && <CastCard name={item.name && item.name} character={item.character && item.character} imageUri={item.profile_path && item.profile_path}/>}
                 />
 
@@ -127,7 +114,6 @@ const MovieDetailsScreen = ({ navigation }) => {
                             imdbRating={item.vote_average}
                             video={item.video}
                             cast={item.cast}
-                            goToTop={goToTop}
                         />
                     }
                 />
@@ -175,8 +161,6 @@ const styles = StyleSheet.create({
         marginBottom: 15
     }
 })
-
-MovieDetailsScreen.navigationOptions = () => { return { headerShown: false } }
 
 export default MovieDetailsScreen
 

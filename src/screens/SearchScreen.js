@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView } from 'react-native'
+import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
-import { movies } from '../movies';
 import axios from 'axios';
 
 const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
@@ -15,7 +14,7 @@ const SearchScreen = ({ navigation }) => {
     const searchMovie = async (keyword) => {
         try {
             // const getMovie = await instanceTMDB.get('/search/movie/?query=' + keyword)
-            const getMovie = await instanceTMDB.get(`/search/multi?include_adult=false&query=${keyword}`)
+            const getMovie = await instanceTMDB.get(`/search/multi?include_adult=true&query=${keyword}`)
             let genres = await instanceTMDB.get('/genre/movie/list');
     
             let searchResult = getMovie.data.results
@@ -74,46 +73,48 @@ const SearchScreen = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
-                <View style={styles.searchContainer}>
-                    <TextInput
-                        autoCorrect={false}
-                        autoCapitalize={'none'}
-                        value={keyword}
-                        style={styles.input} 
-                        onChangeText={setKeyword}
-                        placeholder='Search Movie'
-                        placeholderTextColor='white'
-                    />
-                    <TouchableOpacity onPress={() => searchMovie(keyword)}>
-                        <AntDesign name="search1" size={35} color="lightgrey" />
-                    </TouchableOpacity>
-                </View>
-
-                <FlatList
-                    style={{ alignSelf: 'center' }}
-                    numColumns={'2'}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={() => Math.random() * 10}
-                    data={movieResult}
-                    renderItem={({item}) => 
-                        <MovieCard
-                            navigation={navigation}
-                            id={item.id && item.id}
-                            title={item.title && item.title}
-                            imageUri={item.image && item.image}
-                            genre={item.genre && item.genre}
-                            released={item.release_date && item.release_date}
-                            type={item.type && item.type}
-                            description={item.overview && item.overview}
-                            imdbID={item.imdbID && item.imdbID}
-                            imdbRating={item.vote_average && item.vote_average}
-                            video={item.video && item.video}
-                            cast={item.cast && item.cast}
+    <>
+            <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+                    <View style={styles.searchContainer}>
+                        <TextInput
+                            autoCorrect={false}
+                            autoCapitalize={'none'}
+                            value={keyword}
+                            style={styles.input} 
+                            onChangeText={setKeyword}
+                            placeholder='Search Movie'
+                            placeholderTextColor='white'
                         />
-                    }
-                />
-        </SafeAreaView>
+                        <TouchableOpacity onPress={() => searchMovie(keyword)}>
+                            <AntDesign name="search1" size={35} color="lightgrey" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <FlatList
+                        style={{ alignSelf: 'center' }}
+                        numColumns={'2'}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={() => Math.random() * 10}
+                        data={movieResult}
+                        renderItem={({item}) => 
+                            <MovieCard
+                                navigation={navigation}
+                                id={item.id && item.id}
+                                title={item.title && item.title}
+                                imageUri={item.image && item.image}
+                                genre={item.genre && item.genre}
+                                released={item.release_date && item.release_date}
+                                type={item.type && item.type}
+                                description={item.overview && item.overview}
+                                imdbID={item.imdbID && item.imdbID}
+                                imdbRating={item.vote_average && item.vote_average}
+                                video={item.video && item.video}
+                                cast={item.cast && item.cast}
+                            />
+                        }
+                    />
+            </SafeAreaView>
+    </>
     )
 }
 
@@ -135,8 +136,6 @@ const styles = StyleSheet.create({
         fontSize: 18
     }
 })
-
-SearchScreen.navigationOptions = () => { return { headerShown: false } }
 
 export default SearchScreen
 

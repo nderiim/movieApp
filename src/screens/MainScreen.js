@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, SafeAreaView } from 'react-native'
+import { ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
 import Header from '../components/Header'
 import MainMovies from '../components/MainMovies'
 import CategoriesList from '../components/CategoriesList'
 import axios from "axios"
-
 
 const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
@@ -62,23 +61,28 @@ const MainScreen = ({ navigation }) => {
         setMovies(fetchedMovies)
         //#endregion
     }
-    
+
     useEffect(() => { fetchMovies() }, [])
     
     return (
-        <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
-            <Header navigation={navigation} />
+        <>
+            {
+                movies ? 
+                <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+                    
+                    
+                    <Header navigation={navigation} />
 
-            <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#2D6176'}}>
-                <MainMovies navigation={navigation} movies={movies}/>
-                <CategoriesList navigation={navigation} />
-            </ScrollView>
-
-        </SafeAreaView>
+                    <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#2D6176'}}>
+                        <MainMovies navigation={navigation} movies={movies}/>
+                        <CategoriesList navigation={navigation} />
+                    </ScrollView>
+                </SafeAreaView>
+                : <ActivityIndicator size={'large'} color={'#2D6176'}/>
+            }
+        </>
     )
 }
-
-MainScreen.navigationOptions = () => { return { headerShown: false } }
 
 export default MainScreen
 

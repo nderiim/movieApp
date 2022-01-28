@@ -1,5 +1,4 @@
 import React from 'react'
-import { TouchableOpacity, Image } from 'react-native'
 import { SliderBox } from "react-native-image-slider-box";
 
 const MainMovies = ({ navigation, movies }) => {
@@ -9,7 +8,7 @@ const MainMovies = ({ navigation, movies }) => {
         <SliderBox 
             images={movieImages}
             sliderBoxHeight={550}
-            onCurrentImagePressed={index => navigation.navigate('MovieDetails', 
+            onCurrentImagePressed={index => navigation.push('MovieDetails', 
                 { 
                     id:movies[index].id,
                     title:movies[index].title,
