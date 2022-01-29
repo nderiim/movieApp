@@ -1,11 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
-import CastCard from '../components/CastCard'
+import React, { useState, useRef, useEffect } from 'react';
+import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import CastCard from '../components/CastCard';
 import MovieCard from '../components/MovieCard';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import axios from "axios"
-
-const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
 const MovieDetailsScreen = ({ route, navigation }) => {
     const { id, title, imageUri, genre, released, description, imdbRating, cast, video } = route.params;
@@ -14,7 +11,9 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     const [similarMovies, setSimilarMovies] = useState([])
 
     const fetchSimilarMovies = async () => {
-        //#region 
+        //#region
+        //const response = await fetch(`https://api.themoviedb.org/3/${media_type == 'movie' ? 'movie' : 'tv'}/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
+ 
         const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
         const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
 

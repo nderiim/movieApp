@@ -2,9 +2,6 @@ import React, { useState } from 'react'
 import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
-import axios from 'axios';
-
-const instanceTMDB = axios.create({ method: 'GET', baseURL: 'https://api.themoviedb.org/3', params: { 'api_key': '1f8884e4f7e6ecb71748ffc3b577ee9f'} })
 
 const SearchScreen = ({ navigation }) => {
     const [keyword, setKeyword] = useState('')
