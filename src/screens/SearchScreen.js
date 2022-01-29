@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
@@ -11,14 +11,12 @@ const SearchScreen = ({ navigation }) => {
     const [movieResult, setMovieResult] = useState([])
     const [showActivityIndicator, setShowActivityIndicator] = useState(false)
     
-    ///search/multi?include_adult=false&query=${keyword}
     const searchMovie = async (keyword) => {
         try {
-            // const getMovie = await instanceTMDB.get('/search/movie/?query=' + keyword)
-            const getMovie = await instanceTMDB.get(`search/multi?query=${keyword}`)
-            let genres = await instanceTMDB.get('/genre/movie/list');
-    
-            let searchResult = getMovie.data.results
+            const getMovie = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&query=${keyword}`).then(response => response.json())
+            const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
+            
+            let searchResult = getMovie.results
             for (let i = 0; i < searchResult.length; i++) {
                 if(/null$/.test(searchResult[i].poster_path)){
                     searchResult.splice(i, 1)
@@ -31,9 +29,9 @@ const SearchScreen = ({ navigation }) => {
                 searchResult[i].genre = ''
                 if (searchResult[i].media_type == 'movie'){
                     try {
-                        for (let j = 0; j < genres.data.genres.length; j++) {
-                            if (genres.data.genres[j].id == searchResult[i].genre_ids[0]) {
-                                searchResult[i].genre = genres.data.genres[j].name + (j != searchResult[i].genre_ids.length - 1 ? ', ' : '')
+                        for (let j = 0; j < genres.genres.length; j++) {
+                            if (genres.genres[j].id == searchResult[i].genre_ids[0]) {
+                                searchResult[i].genre = genres.genres[j].name + (j != searchResult[i].genre_ids.length - 1 ? ', ' : '')
                             }
                         }
                     } catch (error) {
@@ -41,9 +39,9 @@ const SearchScreen = ({ navigation }) => {
                     }
                 }else{
                     try {
-                        const movie = await instanceTMDB.get(`/tv/${searchResult[i].id}`)
-                        for (let j = 0; j < movie.data.genres.length; j++) {
-                            searchResult[i].genre += movie.data.genres[j].name + (j != movie.data.genres.length - 1 ? ', ' : '')
+                        const movie = await fetch(`https://api.themoviedb.org/3/tv/${searchResult[i].id}?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                        for (let j = 0; j < movie.genres.length; j++) {
+                            searchResult[i].genre += movie.genres[j].name + (j != movie.genres.length - 1 ? ', ' : '')
                         }
                     } catch (error) {
                         console.log('Error while getting TV show!')
@@ -53,10 +51,10 @@ const SearchScreen = ({ navigation }) => {
 
             for (let i = 0; i < searchResult.length; i++) {
                 try {
-                    var trailer = await instanceTMDB.get(`/movie/${searchResult[i].id}/videos`)
-                    for (let j = 0; j < trailer.data.results.length; j++) {
-                        if (trailer.data.results[j].type == "Trailer") {
-                            searchResult[i].video = trailer.data.results[j].key
+                    var trailer = await fetch(`https://api.themoviedb.org/3/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/videos?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                    for (let j = 0; j < trailer.results.length; j++) {
+                        if (trailer.results[j].type == "Trailer") {
+                            searchResult[i].video = trailer.results[j].key
                             break
                         }
                     }
@@ -67,10 +65,10 @@ const SearchScreen = ({ navigation }) => {
 
             try {
                 for (let i = 0; i < searchResult.length; i++) {
-                    var cast = await instanceTMDB.get(`movie/${searchResult[i].id}/credits`)
+                    var cast = await fetch(`https://api.themoviedb.org/3/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/credits?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US`).then(response => response.json())
                     searchResult[i].cast = []
                     for (let j = 0; j < 10; j++) {
-                        searchResult[i].cast[j] = cast.data.cast[j]
+                        searchResult[i].cast[j] = cast.cast[j]
                         if (searchResult[i].cast[j].profile_path == null) {
                             searchResult[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
                         } else {

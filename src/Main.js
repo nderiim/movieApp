@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AntDesign } from '@expo/vector-icons'; 
 import MainScreen from './screens/MainScreen';
 import MovieDetailsScreen from './screens/MovieDetailsScreen'
 import SearchScreen from './screens/SearchScreen'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AntDesign } from '@expo/vector-icons'; 
 
 const MainStack = createNativeStackNavigator();
 function MainStackScreen() {
@@ -15,7 +15,7 @@ function MainStackScreen() {
             <MainStack.Screen name="MovieDetails" component={MovieDetailsScreen} options={{headerShown: false}}/>
         </MainStack.Navigator>
     )
-}
+};
 
 const SearchStack = createNativeStackNavigator();
 function SearchStackScreen() {
@@ -25,7 +25,7 @@ function SearchStackScreen() {
             <SearchStack.Screen name="MovieDetails" component={MovieDetailsScreen} options={{headerShown: false}}/>
         </SearchStack.Navigator>
     )
-}
+};
 
 const BottomTab = createBottomTabNavigator();
 function Main() {

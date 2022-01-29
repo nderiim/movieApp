@@ -15,17 +15,18 @@ const MovieDetailsScreen = ({ route, navigation }) => {
 
     const fetchSimilarMovies = async () => {
         //#region 
-        const response = await instanceTMDB.get(`/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`);
-        let genres = await instanceTMDB.get('/genre/movie/list');
+        const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
+        const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
+
         let fetchedSimilarMovies = []
         for (let i = 0; i < 10; i++) {
-            fetchedSimilarMovies[i] = response.data.results[i]
-            fetchedSimilarMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.data.results[i].poster_path
+            fetchedSimilarMovies[i] = response.results[i]
+            fetchedSimilarMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.results[i].poster_path
             fetchedSimilarMovies[i].genre = ''
-            for (let j = 0; j < genres.data.genres.length; j++) {
-                for (let z = 0; z < genres.data.genres.length; z++) {
-                    if (fetchedSimilarMovies[i].genre_ids[j] == genres.data.genres[z].id) {
-                        fetchedSimilarMovies[i].genre += genres.data.genres[z].name + (j != fetchedSimilarMovies[i].genre_ids.length - 1 ? ', ' : '')
+            for (let j = 0; j < genres.genres.length; j++) {
+                for (let z = 0; z < genres.genres.length; z++) {
+                    if (fetchedSimilarMovies[i].genre_ids[j] == genres.genres[z].id) {
+                        fetchedSimilarMovies[i].genre += genres.genres[z].name + (j != fetchedSimilarMovies[i].genre_ids.length - 1 ? ', ' : '')
                     }
                 }
             }
@@ -33,10 +34,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
         
         for (let i = 0; i < fetchedSimilarMovies.length; i++) {
             try {
-                var trailer = await instanceTMDB.get(`/movie/${fetchedSimilarMovies[i].id}/videos`)
-                for (let j = 0; j < trailer.data.results.length; j++) {
-                    if (trailer.data.results[j].type == "Trailer") {
-                        fetchedSimilarMovies[i].video = trailer.data.results[j].key
+                var trailer = await fetch(`https://api.themoviedb.org/3/movie/${fetchedSimilarMovies[i].id}/videos?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                for (let j = 0; j < trailer.results.length; j++) {
+                    if (trailer.results[j].type == "Trailer") {
+                        fetchedSimilarMovies[i].video = trailer.results[j].key
                         break
                     }
                 }
@@ -46,10 +47,10 @@ const MovieDetailsScreen = ({ route, navigation }) => {
         }
         
         for (let i = 0; i < fetchedSimilarMovies.length; i++) {
-            var cast = await instanceTMDB.get(`movie/${fetchedSimilarMovies[i].id}/credits`)
+            var cast = await fetch(`https://api.themoviedb.org/3/movie/${fetchedSimilarMovies[i].id}/credits?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US`).then(response => response.json())
             fetchedSimilarMovies[i].cast = []
             for (let j = 0; j < 10; j++) {
-                fetchedSimilarMovies[i].cast[j] = cast.data.cast[j]
+                fetchedSimilarMovies[i].cast[j] = cast.cast[j]
                 if (fetchedSimilarMovies[i].cast[j].profile_path == null) {
                     fetchedSimilarMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
                 } else {
