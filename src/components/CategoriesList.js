@@ -130,7 +130,6 @@ const CategoriesList = ({navigation}) => {
                 for (let z = 0; z < genres.data.genres.length; z++) {
                     if (fetchedPopularTvShows[i].genre_ids[j] == genres.data.genres[z].id) {
                         fetchedPopularTvShows[i].genre += genres.data.genres[z].name + (j != fetchedPopularTvShows[i].genre_ids.length - 1 ? ', ' : '')
-                        console.log(genres.data.genres[z].id)
                     }
                 }
             }

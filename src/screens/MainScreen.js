@@ -69,14 +69,13 @@ const MainScreen = ({ navigation }) => {
             {
                 movies.length != 0 ? 
                 <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
-                    
-                    
                     <Header navigation={navigation} />
 
                     <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#2D6176'}}>
                         <MainMovies navigation={navigation} movies={movies}/>
                         <CategoriesList navigation={navigation} />
                     </ScrollView>
+                    
                 </SafeAreaView>
                 : <ActivityIndicator size={'large'} color={'lightgrey'} style={{backgroundColor: '#2D6176',flex: 1}}/>
             }

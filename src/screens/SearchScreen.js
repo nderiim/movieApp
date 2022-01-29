@@ -15,7 +15,7 @@ const SearchScreen = ({ navigation }) => {
     const searchMovie = async (keyword) => {
         try {
             // const getMovie = await instanceTMDB.get('/search/movie/?query=' + keyword)
-            const getMovie = await instanceTMDB.get(`/search/multi?include_adult=true&query=${keyword}`)
+            const getMovie = await instanceTMDB.get(`search/multi?query=${keyword}`)
             let genres = await instanceTMDB.get('/genre/movie/list');
     
             let searchResult = getMovie.data.results
@@ -28,9 +28,25 @@ const SearchScreen = ({ navigation }) => {
 
             for (let i = 0; i < searchResult.length; i++) {
                 searchResult[i].image = 'https://image.tmdb.org/t/p/w500' + searchResult[i].poster_path
-                for (let j = 0; j < genres.data.genres.length; j++) {
-                    if (genres.data.genres[j].id == searchResult[i].genre_ids[0]) {
-                        searchResult[i].genre = genres.data.genres[j].name
+                searchResult[i].genre = ''
+                if (searchResult[i].media_type == 'movie'){
+                    try {
+                        for (let j = 0; j < genres.data.genres.length; j++) {
+                            if (genres.data.genres[j].id == searchResult[i].genre_ids[0]) {
+                                searchResult[i].genre = genres.data.genres[j].name + (j != searchResult[i].genre_ids.length - 1 ? ', ' : '')
+                            }
+                        }
+                    } catch (error) {
+                        console.log('Error while getting movie!')
+                    }
+                }else{
+                    try {
+                        const movie = await instanceTMDB.get(`/tv/${searchResult[i].id}`)
+                        for (let j = 0; j < movie.data.genres.length; j++) {
+                            searchResult[i].genre += movie.data.genres[j].name + (j != movie.data.genres.length - 1 ? ', ' : '')
+                        }
+                    } catch (error) {
+                        console.log('Error while getting TV show!')
                     }
                 }
             }
@@ -75,55 +91,55 @@ const SearchScreen = ({ navigation }) => {
 
     return (
     <>
-            <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
-                    <View style={styles.searchContainer}>
-                        <TextInput
-                            autoCorrect={false}
-                            autoCapitalize={'none'}
-                            value={keyword}
-                            style={styles.input} 
-                            onChangeText={setKeyword}
-                            placeholder='Search Movie'
-                            placeholderTextColor='white'
-                        />
-                        <TouchableOpacity onPress={() => {
-                                setShowActivityIndicator(true)
-                                setMovieResult([])
-                                searchMovie(keyword)
-                            }
-                        }>
-                            <AntDesign name="search1" size={35} color="lightgrey" />
-                        </TouchableOpacity>
-                    </View>
+        <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        autoCorrect={false}
+                        autoCapitalize={'none'}
+                        value={keyword}
+                        style={styles.input} 
+                        onChangeText={setKeyword}
+                        placeholder='Search Movie'
+                        placeholderTextColor='white'
+                    />
+                    <TouchableOpacity onPress={() => {
+                            setShowActivityIndicator(true)
+                            setMovieResult([])
+                            searchMovie(keyword)
+                        }
+                    }>
+                        <AntDesign name="search1" size={35} color="lightgrey" />
+                    </TouchableOpacity>
+                </View>
 
-                    {
-                        movieResult.length == 0 && showActivityIndicator && keyword.length != 0
-                        ? <ActivityIndicator size={'large'} color={'lightgrey'} style={{flex:1}}/>
-                        :<FlatList
-                            style={{ alignSelf: 'center' }}
-                            numColumns={'2'}
-                            showsVerticalScrollIndicator={false}
-                            keyExtractor={() => Math.random() * 10}
-                            data={movieResult}
-                            renderItem={({item}) => 
-                                <MovieCard
-                                    navigation={navigation}
-                                    id={item.id && item.id}
-                                    title={item.title && item.title}
-                                    imageUri={item.image && item.image}
-                                    genre={item.genre && item.genre}
-                                    released={item.release_date && item.release_date}
-                                    type={item.type && item.type}
-                                    description={item.overview && item.overview}
-                                    imdbID={item.imdbID && item.imdbID}
-                                    imdbRating={item.vote_average && item.vote_average}
-                                    video={item.video && item.video}
-                                    cast={item.cast && item.cast}
-                                />
-                            }
-                        />
-                    }
-            </SafeAreaView>
+                {
+                    movieResult.length == 0 && showActivityIndicator && keyword.length != 0
+                    ? <ActivityIndicator size={'large'} color={'lightgrey'} style={{flex:1}}/>
+                    :<FlatList
+                        style={{ alignSelf: 'center' }}
+                        numColumns={'2'}
+                        showsVerticalScrollIndicator={false}
+                        keyExtractor={() => Math.random() * 10}
+                        data={movieResult}
+                        renderItem={({item}) => 
+                            <MovieCard
+                                navigation={navigation}
+                                id={item.id && item.id}
+                                title={item.title && item.title}
+                                imageUri={/undefined$/.test(item.image) ? 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg' : item.image}
+                                genre={item.genre && item.genre}
+                                released={item.release_date && item.release_date}
+                                type={item.type && item.type}
+                                description={item.overview && item.overview}
+                                imdbID={item.imdbID && item.imdbID}
+                                imdbRating={item.vote_average && item.vote_average}
+                                video={item.video && item.video}
+                                cast={item.cast && item.cast}
+                            />
+                        }
+                    />
+                }
+        </SafeAreaView>
     </>
     )
 }
