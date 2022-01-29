@@ -5,7 +5,7 @@ import MovieCard from '../components/MovieCard';
 import YoutubePlayer from 'react-native-youtube-iframe';
 
 const MovieDetailsScreen = ({ route, navigation }) => {
-    const { id, title, imageUri, genre, released, description, imdbRating, cast, video } = route.params;
+    const { id, title, imageUri, genre, released, description, imdbRating, cast, video, categoryName, media_type } = route.params;
     const [imageHeight, setImageHeight] = useState(false)
     const scroll = useRef()
     const [similarMovies, setSimilarMovies] = useState([])
@@ -95,7 +95,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                     renderItem={({item}) => item != undefined && <CastCard name={item.name && item.name} character={item.character && item.character} imageUri={item.profile_path && item.profile_path}/>}
                 />
 
-                <Text style={styles.castHeader}>Similar Movies</Text>
+                <Text style={styles.castHeader}>Similar {categoryName == 'Popular Tv Shows' || media_type == 'tv' ? 'TV Shows' : 'Movies'}</Text>
                 {
                     similarMovies.length != 0 ? 
                     <FlatList

@@ -1,7 +1,7 @@
 import React from 'react'
 import { TouchableOpacity, Image, StyleSheet, Dimensions, Text, View } from 'react-native'
 
-const MovieCard = ({navigation, id, title, imageUri, genre, released, type, description, imdbID, imdbRating, video, cast }) => {
+const MovieCard = ({navigation, id, title, imageUri, genre, released, type, description, imdbID, imdbRating, video, cast, categoryName, media_type }) => {
     return (
         <TouchableOpacity 
                 onPress={() => navigation.push('MovieDetails',  
@@ -16,7 +16,9 @@ const MovieCard = ({navigation, id, title, imageUri, genre, released, type, desc
                         imdbID, 
                         imdbRating, 
                         video, 
-                        cast
+                        cast,
+                        categoryName,
+                        media_type
                     })
         }>
             <Image 

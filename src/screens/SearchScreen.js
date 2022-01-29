@@ -130,6 +130,7 @@ const SearchScreen = ({ navigation }) => {
                                 imdbRating={item.vote_average && item.vote_average}
                                 video={item.video && item.video}
                                 cast={item.cast && item.cast}
+                                media_type={item.media_type}
                             />
                         }
                     />

@@ -27,6 +27,7 @@ const CategorieCard = ({ navigation, movies, categoryName }) => {
                                 imdbRating={item.vote_average}
                                 video={item.video}
                                 cast={item.cast}
+                                categoryName={categoryName}
                             />
                         }
                     />
