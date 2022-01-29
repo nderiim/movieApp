@@ -122,16 +122,15 @@ const CategoriesList = ({navigation}) => {
         const response = await instanceTMDB.get(`/tv/popular?language=en-US&page=1`);
         let genres = await instanceTMDB.get('/genre/movie/list'); // /tv/88329?language=en-US
         let fetchedPopularTvShows = []
+
         for (let i = 0; i < 10; i++) {
             fetchedPopularTvShows[i] = response.data.results[i]
             fetchedPopularTvShows[i].image = 'https://image.tmdb.org/t/p/w500' + response.data.results[i].poster_path
             fetchedPopularTvShows[i].genre = ''
-            for (let j = 0; j < genres.data.genres.length; j++) {
-                for (let z = 0; z < genres.data.genres.length; z++) {
-                    if (fetchedPopularTvShows[i].genre_ids[j] == genres.data.genres[z].id) {
-                        fetchedPopularTvShows[i].genre += genres.data.genres[z].name + (j != fetchedPopularTvShows[i].genre_ids.length - 1 ? ', ' : '')
-                    }
-                }
+
+            const movie = await instanceTMDB.get(`/tv/${fetchedPopularTvShows[i].id}`)
+            for (let j = 0; j < movie.data.genres.length; j++) {
+                fetchedPopularTvShows[i].genre += movie.data.genres[j].name + (j != movie.data.genres.length - 1 ? ', ' : '')
             }
         }
 

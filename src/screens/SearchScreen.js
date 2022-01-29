@@ -125,7 +125,7 @@ const SearchScreen = ({ navigation }) => {
                             <MovieCard
                                 navigation={navigation}
                                 id={item.id && item.id}
-                                title={item.title && item.title}
+                                title={item.title ? item.title : item.name}
                                 imageUri={/undefined$/.test(item.image) ? 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg' : item.image}
                                 genre={item.genre && item.genre}
                                 released={item.release_date && item.release_date}
