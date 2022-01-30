@@ -3,7 +3,7 @@ const initialState = {
     upcomingMovies: [],
     moviesByReleaseYear: [],
     popularTvShows: [],
-    movieResult: [],
+    searchResult: [],
     similarMovies: [],
 };
 
@@ -17,8 +17,10 @@ export function movieReducer(state = initialState, action) {
             return {...state, moviesByReleaseYear: action.payload}
         case 'getPopularTvShows':
             return {...state, popularTvShows: action.payload} 
-        case 'searchMovie':
-            return {...state, movieResult: action.payload}    
+        case 'search':
+            return {...state, searchResult: action.payload}    
+        // case 'clearSearchResult':
+        //     return {...state, searchResult: []}    
         case 'getSimilarMovies':
             return {...state, similarMovies: action.payload}    
         default:
