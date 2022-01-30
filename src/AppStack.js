@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AntDesign } from '@expo/vector-icons'; 
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MainScreen from './screens/MainScreen';
 import MovieDetailsScreen from './screens/MovieDetailsScreen'
 import SearchScreen from './screens/SearchScreen'
@@ -27,10 +27,13 @@ function SearchStackScreen() {
 };
 
 
-const BottomTab = createBottomTabNavigator();
+const BottomTab = createMaterialBottomTabNavigator();
 function AppStack() {
     return (
-        <BottomTab.Navigator>
+        <BottomTab.Navigator 
+            barStyle={{ backgroundColor: '#2D6176' }}
+            shifting={true}
+        >
             <BottomTab.Screen 
                 name="MainTab" 
                 component={MainStackScreen} 
@@ -38,7 +41,7 @@ function AppStack() {
                     headerShown: false, 
                     tabBarLabel: 'Home',
                     tabBarIcon: () => (
-                        <AntDesign name="home" size={30} />
+                        <MaterialCommunityIcons name="home" size={26} />
                     )}
                 }
             />
@@ -48,8 +51,9 @@ function AppStack() {
                 component={SearchStackScreen} 
                 options={{
                     headerShown: false, 
+                    tabBarLabel: 'Search',
                     tabBarIcon: () => (
-                        <AntDesign name="search1" size={30} />
+                        <MaterialCommunityIcons name="movie-search-outline" size={26} />
                     )}
                 }
             />

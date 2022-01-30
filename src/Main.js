@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppStack from './AppStack';
-import {createStore, combineReducers, applyMiddleware} from 'redux';
-import {Provider} from 'react-redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import {movieReducer} from "./reducers";
+import AppStack from './AppStack';
+import { movieReducer } from "./reducers";
 
 const rootReducer = combineReducers({ movieReducer: movieReducer })
 
