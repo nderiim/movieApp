@@ -40,7 +40,7 @@ const MainScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     logo:{
         height: 40, 
-        margin: 15
+        margin: 10
     }
 })
 
