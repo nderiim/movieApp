@@ -4,7 +4,7 @@ import MainMovies from '../components/MainMovies'
 import CategoriesList from '../components/CategoriesList'
 import { SvgCssUri } from 'react-native-svg';
 import {useDispatch, useSelector} from 'react-redux';
-import getPopularMovies from './actions';
+import getPopularMovies from '../actions';
 
 const MainScreen = ({ navigation }) => {
     const dispatch = useDispatch()

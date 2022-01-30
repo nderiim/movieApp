@@ -3,8 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppStack from './AppStack';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
-import rootReducer from './reducers';
 import thunk from 'redux-thunk';
+import {movieReducer} from "./reducers";
+
+const rootReducer = combineReducers({ movieReducer: movieReducer })
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
