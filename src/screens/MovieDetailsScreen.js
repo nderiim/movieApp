@@ -1,72 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCard from '../components/CastCard';
 import MovieCard from '../components/MovieCard';
-import YoutubePlayer from 'react-native-youtube-iframe';
+import { getSimilarMovies } from '../actions'
 
 const MovieDetailsScreen = ({ route, navigation }) => {
+    const dispatch = useDispatch();
+    const {similarMovies} = useSelector((state) => state.movieReducer)
     const { id, title, imageUri, genre, released, description, imdbRating, cast, video, categoryName, media_type } = route.params;
     const [imageHeight, setImageHeight] = useState(false)
-    const scroll = useRef()
-    const [similarMovies, setSimilarMovies] = useState([])
-
-    const fetchSimilarMovies = async () => {
-        //#region
-        //const response = await fetch(`https://api.themoviedb.org/3/${media_type == 'movie' ? 'movie' : 'tv'}/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
- 
-        const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
-        const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
-
-        let fetchedSimilarMovies = []
-        for (let i = 0; i < 10; i++) {
-            fetchedSimilarMovies[i] = response.results[i]
-            fetchedSimilarMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.results[i].poster_path
-            fetchedSimilarMovies[i].genre = ''
-            for (let j = 0; j < genres.genres.length; j++) {
-                for (let z = 0; z < genres.genres.length; z++) {
-                    if (fetchedSimilarMovies[i].genre_ids[j] == genres.genres[z].id) {
-                        fetchedSimilarMovies[i].genre += genres.genres[z].name + (j != fetchedSimilarMovies[i].genre_ids.length - 1 ? ', ' : '')
-                    }
-                }
-            }
-        }
-        
-        for (let i = 0; i < fetchedSimilarMovies.length; i++) {
-            try {
-                var trailer = await fetch(`https://api.themoviedb.org/3/movie/${fetchedSimilarMovies[i].id}/videos?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
-                for (let j = 0; j < trailer.results.length; j++) {
-                    if (trailer.results[j].type == "Trailer") {
-                        fetchedSimilarMovies[i].video = trailer.results[j].key
-                        break
-                    }
-                }
-            } catch (error) {
-                console.log("No video found!")
-            }
-        }
-        
-        for (let i = 0; i < fetchedSimilarMovies.length; i++) {
-            var cast = await fetch(`https://api.themoviedb.org/3/movie/${fetchedSimilarMovies[i].id}/credits?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US`).then(response => response.json())
-            fetchedSimilarMovies[i].cast = []
-            for (let j = 0; j < 10; j++) {
-                fetchedSimilarMovies[i].cast[j] = cast.cast[j]
-                if (fetchedSimilarMovies[i].cast[j].profile_path == null) {
-                    fetchedSimilarMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
-                } else {
-                    fetchedSimilarMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + fetchedSimilarMovies[i].cast[j].profile_path
-                }
-            }
-        }
-        
-        setSimilarMovies(fetchedSimilarMovies)
-        //#endregion
-    }
     
-    useEffect(() => { fetchSimilarMovies() }, [id])
+    useEffect(() => { dispatch(getSimilarMovies(id)) }, [])
 
     return (
         <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
-            <ScrollView ref={scroll} showsVerticalScrollIndicator={false} >
+            <ScrollView showsVerticalScrollIndicator={false} >
                 <Image 
                     style={[styles.imageStyle, { height: imageHeight ? 600 : Dimensions.get('window').height / 2}] }
                     source={{uri: imageUri}}

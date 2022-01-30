@@ -242,3 +242,61 @@ export const getPopularTvShows = () => {
         console.log(error)
     }
 }
+
+export const getSimilarMovies = (id) => {
+    try {
+        return async dispatch => {
+            //const response = await fetch(`https://api.themoviedb.org/3/${media_type == 'movie' ? 'movie' : 'tv'}/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
+            const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US&page=1`).then(response => response.json())
+            const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
+
+            let similarMovies = []
+            for (let i = 0; i < 10; i++) {
+                similarMovies[i] = response.results[i]
+                similarMovies[i].image = 'https://image.tmdb.org/t/p/w500' + response.results[i].poster_path
+                similarMovies[i].genre = ''
+                for (let j = 0; j < genres.genres.length; j++) {
+                    for (let z = 0; z < genres.genres.length; z++) {
+                        if (similarMovies[i].genre_ids[j] == genres.genres[z].id) {
+                            similarMovies[i].genre += genres.genres[z].name + (j != similarMovies[i].genre_ids.length - 1 ? ', ' : '')
+                        }
+                    }
+                }
+            }
+            
+            for (let i = 0; i < similarMovies.length; i++) {
+                try {
+                    var trailer = await fetch(`https://api.themoviedb.org/3/movie/${similarMovies[i].id}/videos?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                    for (let j = 0; j < trailer.results.length; j++) {
+                        if (trailer.results[j].type == "Trailer") {
+                            similarMovies[i].video = trailer.results[j].key
+                            break
+                        }
+                    }
+                } catch (error) {
+                    console.log("No video found!")
+                }
+            }
+            
+            for (let i = 0; i < similarMovies.length; i++) {
+                var cast = await fetch(`https://api.themoviedb.org/3/movie/${similarMovies[i].id}/credits?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US`).then(response => response.json())
+                similarMovies[i].cast = []
+                for (let j = 0; j < 10; j++) {
+                    similarMovies[i].cast[j] = cast.cast[j]
+                    if (similarMovies[i].cast[j].profile_path == null) {
+                        similarMovies[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                    } else {
+                        similarMovies[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + similarMovies[i].cast[j].profile_path
+                    }
+                }
+            }
+            
+            dispatch( {
+                type: 'getSimilarMovies',
+                payload: similarMovies
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
