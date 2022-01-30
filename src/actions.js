@@ -1,4 +1,4 @@
-const getPopularMovies = () => {
+export const getPopularMovies = () => {
     try {
         return async dispatch => {
 
@@ -62,4 +62,3 @@ const getPopularMovies = () => {
 
 }
 
-export default getPopularMovies

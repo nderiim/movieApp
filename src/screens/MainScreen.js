@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { View, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
 import MainMovies from '../components/MainMovies'
 import CategoriesList from '../components/CategoriesList'
 import { SvgCssUri } from 'react-native-svg';
-import {useDispatch, useSelector} from 'react-redux';
-import getPopularMovies from '../actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPopularMovies } from '../actions';
 
 const MainScreen = ({ navigation }) => {
     const dispatch = useDispatch()
     const {popularMovies} = useSelector((state) => state.movieReducer);
 
-    useEffect(() => { 
-        dispatch(getPopularMovies())
-    }, [])
+    useEffect(() => { dispatch(getPopularMovies()) }, [])
     
     return (
         <>
