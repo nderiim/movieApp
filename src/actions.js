@@ -300,3 +300,92 @@ export const getSimilarMovies = (id) => {
         console.log(error)
     }
 }
+
+export const searchMovie = (keyword) => {
+    try {
+        return async dispatch => {
+            try {
+                const getMovie = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&query=${keyword}`).then(response => response.json())
+                const genres = await fetch('https://api.themoviedb.org/3/genre/movie/list?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f').then(response => response.json())
+                
+                let searchResult = getMovie.results
+                for (let i = 0; i < searchResult.length; i++) {
+                    if(/null$/.test(searchResult[i].poster_path)){
+                        searchResult.splice(i, 1)
+                        i--
+                    }
+                }
+
+                for (let i = 0; i < searchResult.length; i++) {
+                    searchResult[i].image = 'https://image.tmdb.org/t/p/w500' + searchResult[i].poster_path
+                    searchResult[i].genre = ''
+                    if (searchResult[i].media_type == 'movie'){
+                        try {
+                            for (let j = 0; j < genres.genres.length; j++) {
+                                if (genres.genres[j].id == searchResult[i].genre_ids[0]) {
+                                    searchResult[i].genre = genres.genres[j].name + (j != searchResult[i].genre_ids.length - 1 ? ', ' : '')
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Error while getting movie!')
+                        }
+                    }else{
+                        try {
+                            const movie = await fetch(`https://api.themoviedb.org/3/tv/${searchResult[i].id}?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                            for (let j = 0; j < movie.genres.length; j++) {
+                                searchResult[i].genre += movie.genres[j].name + (j != movie.genres.length - 1 ? ', ' : '')
+                            }
+                        } catch (error) {
+                            console.log('Error while getting TV show!')
+                        }
+                    }
+                }
+
+                for (let i = 0; i < searchResult.length; i++) {
+                    try {
+                        var trailer = await fetch(`https://api.themoviedb.org/3/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/videos?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f`).then(response => response.json())
+                        for (let j = 0; j < trailer.results.length; j++) {
+                            if (trailer.results[j].type == "Trailer") {
+                                searchResult[i].video = trailer.results[j].key
+                                break
+                            }
+                        }
+                    } catch (error) {
+                        console.log("No video found!")
+                    }
+                }
+
+                try {
+                    for (let i = 0; i < searchResult.length; i++) {
+                        var cast = await fetch(`https://api.themoviedb.org/3/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/credits?api_key=1f8884e4f7e6ecb71748ffc3b577ee9f&language=en-US`).then(response => response.json())
+                        searchResult[i].cast = []
+                        for (let j = 0; j < 10; j++) {
+                            searchResult[i].cast[j] = cast.cast[j]
+                            if (searchResult[i].cast[j].profile_path == null) {
+                                searchResult[i].cast[j].profile_path = 'https://www.wildhareboca.com/wp-content/uploads/sites/310/2018/03/image-not-available.jpg'
+                            } else {
+                                searchResult[i].cast[j].profile_path = 'https://image.tmdb.org/t/p/w500' + searchResult[i].cast[j].profile_path
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log('Cast fetch failed!')
+                }
+                
+                dispatch( {
+                    type: 'search',
+                    payload: searchResult
+                })
+
+            } catch (error) {
+                console.log('No results!')
+            }
+        }
+    } catch(error){
+        console.log(error)
+    }
+}
+
+export const clearSearchResult = () => {
+    return { type: 'clearSearchResult' }
+}

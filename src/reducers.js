@@ -19,8 +19,8 @@ export function movieReducer(state = initialState, action) {
             return {...state, popularTvShows: action.payload} 
         case 'search':
             return {...state, searchResult: action.payload}    
-        // case 'clearSearchResult':
-        //     return {...state, searchResult: []}    
+        case 'clearSearchResult':
+            return {...state, searchResult: []}    
         case 'getSimilarMovies':
             return {...state, similarMovies: action.payload}    
         default:
