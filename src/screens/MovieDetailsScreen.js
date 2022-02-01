@@ -12,7 +12,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
     const { id, title, imageUri, genre, released, description, imdbRating, cast, video, categoryName, media_type } = route.params;
     const [imageHeight, setImageHeight] = useState(false)
     
-    useEffect(() => { dispatch(getSimilarMovies(id)) }, [])
+    useEffect(() => { dispatch(getSimilarMovies(id, media_type, categoryName)) }, [])
 
     return (
         <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
@@ -42,7 +42,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                     horizontal
                     keyExtractor={() => Math.random() * 10}
                     data={cast}
-                    renderItem={({item}) => item != undefined && <CastCard name={item.name && item.name} character={item.character && item.character} imageUri={item.profile_path && item.profile_path}/>}
+                    renderItem={({item}) => item != undefined && <CastCard name={item.name ? item.name : item.title} character={item.character && item.character} imageUri={item.profile_path && item.profile_path}/>}
                 />
 
                 <Text style={styles.castHeader}>Similar {categoryName == 'Popular Tv Shows' || media_type == 'tv' ? 'TV Shows' : 'Movies'}</Text>
@@ -57,7 +57,7 @@ const MovieDetailsScreen = ({ route, navigation }) => {
                             <MovieCard
                                 navigation={navigation}
                                 id={item.id}
-                                title={item.title}
+                                title={categoryName == 'Popular Tv Shows' || item.name ? item.name : item.title}
                                 imageUri={item.image}
                                 genre={item.genre}
                                 released={item.release_date}
