@@ -185,8 +185,6 @@ export const getPopularTvShows = () => {
 export const getSimilarMovies = (id, media_type, categoryName = '') => {
     try {
         return async dispatch => {
-            console.log('categoryName= ' + categoryName)
-            console.log('media_type= ' + media_type)
             const response = await fetch(`${constants.baseUrl}/${media_type == 'tv' || categoryName == 'Popular Tv Shows' ? 'tv' : 'movie'}/${id}/similar?api_key=${constants.api_key}&language=en-US&page=1`).then(response => response.json())
             // const response = await fetch(`${constants.baseUrl}/movie/${id}/similar?api_key=${constants.api_key}&language=en-US&page=1`).then(response => response.json())
             const genres = await fetch(constants.genreUrl).then(response => response.json())
