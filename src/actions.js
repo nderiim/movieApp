@@ -151,11 +151,11 @@ export const getPopularTvShows = () => {
                 try {
                 var trailer = await fetch(`${constants.baseUrl}/tv/${popularTvShows[i].id}/videos?api_key=${constants.api_key}`).then(response => response.json())
                 for (let j = 0; j < trailer.results.length; j++) {
-                        if (trailer.results[j].type == "Trailer") {
-                            popularTvShows[i].video = trailer.results[j].key
-                            break
-                        }
+                    if (trailer.results[j].type == "Trailer") {
+                        popularTvShows[i].video = trailer.results[j].key
+                        break
                     }
+                }
                 } catch (error) {
                     console.log('Popular TV show video not found!')
                 }
@@ -165,14 +165,7 @@ export const getPopularTvShows = () => {
                 try{
                     var cast = await fetch(`${constants.baseUrl}/tv/${popularTvShows[i].id}/credits?api_key=${constants.api_key}&language=en-US`).then(response => response.json())
                     popularTvShows[i].cast = []
-                    for (let j = 0; j < 10; j++) {
-                        popularTvShows[i].cast[j] = cast.cast[j]
-                        if (popularTvShows[i].cast[j].profile_path == null) {
-                            popularTvShows[i].cast[j].profile_path = constants.imageNotAvailable
-                        } else {
-                        popularTvShows[i].cast[j].profile_path = constants.imageUrl + popularTvShows[i].cast[j].profile_path
-                        }
-                    }
+                    popularTvShows[i].cast = getCast(popularTvShows[i], cast)
                 } catch (error) {
                     console.log('Popular TV show cast fetch failed!')
                 }
@@ -230,14 +223,7 @@ export const getSimilarMovies = (id, media_type, categoryName = '') => {
                 try {
                     var cast = await fetch(`${constants.baseUrl}/movie/${similarMovies[i].id}/credits?api_key=${constants.api_key}&language=en-US`).then(response => response.json())
                     similarMovies[i].cast = []
-                    for (let j = 0; j < 10; j++) {
-                        similarMovies[i].cast[j] = cast.cast[j]
-                        if (similarMovies[i].cast[j].profile_path == null  || similarMovies[i].cast[j].profile_path == undefined) {
-                            similarMovies[i].cast[j].profile_path = constants.imageNotAvailable
-                        } else {
-                            similarMovies[i].cast[j].profile_path = constants.imageUrl + cast.cast[j].profile_path
-                        }
-                    }
+                    similarMovies[i].cast = getCast(similarMovies[i], cast)
                 } catch (error) {
                     console.log('Similar movie or TV show cast fetch failed!')
                 }
@@ -278,7 +264,7 @@ export const searchMovie = (keyword) => {
                             }
                         }
                     } catch (error) {
-                        console.log('Error while getting movie!')
+                        console.log('Error while getting movie genres!')
                     }
                 }else{
                     try {
@@ -287,7 +273,7 @@ export const searchMovie = (keyword) => {
                             searchResult[i].genre += movie.genres[j].name + (j != movie.genres.length - 1 ? ', ' : '')
                         }
                     } catch (error) {
-                        console.log('Error while getting TV show!')
+                        console.log('Error while getting TV show genres!')
                     }
                 }
             }
@@ -310,14 +296,7 @@ export const searchMovie = (keyword) => {
                 for (let i = 0; i < searchResult.length; i++) {
                     var cast = await fetch(`${constants.baseUrl}/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/credits?api_key=${constants.api_key}&language=en-US`).then(response => response.json())
                     searchResult[i].cast = []
-                    for (let j = 0; j < 10; j++) {
-                        searchResult[i].cast[j] = cast.cast[j]
-                        if (searchResult[i].cast[j].profile_path == null) {
-                            searchResult[i].cast[j].profile_path = constants.imageNotAvailable
-                        } else {
-                            searchResult[i].cast[j].profile_path = constants.imageUrl + searchResult[i].cast[j].profile_path
-                        }
-                    }
+                    searchResult[i].cast = getCast(searchResult[i], cast)
                 }
             } catch (error) {
                 console.log('Requested movie cast fetch failed!')
@@ -360,7 +339,7 @@ const getTrailer = async (movie) => {
 }
 
 const getCast = (movie, cast) => {
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < 15; j++) {
         movie.cast[j] = cast.cast[j]
         if (movie.cast[j].profile_path == null || movie.cast[j].profile_path == undefined) {
             movie.cast[j].profile_path = constants.imageNotAvailable
