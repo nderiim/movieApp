@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { View, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
 import MainMovies from '../components/MainMovies'
 import CategoriesList from '../components/CategoriesList'
 import { SvgCssUri } from 'react-native-svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPopularMovies } from '../actions';
+import { themeContext } from '../context';
 
 const MainScreen = ({ navigation }) => {
+    const theme = useContext(themeContext);
     const dispatch = useDispatch()
     const {popularMovies} = useSelector((state) => state.movieReducer);
 
@@ -16,7 +18,7 @@ const MainScreen = ({ navigation }) => {
         <>
             {
                 popularMovies.length != 0 ? 
-                <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+                <SafeAreaView style={{backgroundColor: theme, height: '100%'}}>
                     
                     <View style={{ borderBottomColor: 'lightgrey', borderBottomWidth: '0.2'}}>
                         <SvgCssUri
@@ -25,13 +27,13 @@ const MainScreen = ({ navigation }) => {
                         />
                     </View>
 
-                    <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: '#2D6176'}}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <MainMovies navigation={navigation} movies={popularMovies}/>
                         <CategoriesList navigation={navigation} />
                     </ScrollView>
                     
                 </SafeAreaView>
-                : <ActivityIndicator size={'large'} color={'lightgrey'} style={{backgroundColor: '#2D6176',flex: 1}}/>
+                : <ActivityIndicator size={'large'} color={'lightgrey'} style={{backgroundColor: theme, flex: 1}}/>
             }
         </>
     )

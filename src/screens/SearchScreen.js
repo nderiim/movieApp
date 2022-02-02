@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
 import MovieCard from '../components/MovieCard';
 import { searchMovie, clearSearchResult } from '../actions'
+import { themeContext } from '../context';
 
 const SearchScreen = ({ navigation }) => {
+    const theme = useContext(themeContext);
     const dispatch = useDispatch();
     const { searchResult } = useSelector((state) => state.movieReducer);
     const [keyword, setKeyword] = useState('')
@@ -13,7 +15,7 @@ const SearchScreen = ({ navigation }) => {
 
     return (
     <>
-        <SafeAreaView style={{backgroundColor: '#2D6176', height: '100%'}}>
+        <SafeAreaView style={{backgroundColor: theme, height: '100%'}}>
                 <View style={styles.searchContainer}>
                     <TextInput
                         autoCorrect={false}

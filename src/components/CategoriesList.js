@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { View } from 'react-native'
 import CategorieCard from './CategorieCard';
 import { getUpcomingMovies, getMoviesByReleaseYear, getPopularTvShows } from '../actions'

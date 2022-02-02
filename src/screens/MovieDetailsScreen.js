@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Text, StyleSheet, Image, Dimensions, FlatList, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import CastCard from '../components/CastCard';
 import MovieCard from '../components/MovieCard';
 import { getSimilarMovies } from '../actions'
+import { themeContext } from '../context';
 
 const MovieDetailsScreen = ({ route, navigation }) => {
+    const theme = useContext(themeContext);
     const dispatch = useDispatch();
     const {similarMovies} = useSelector((state) => state.movieReducer)
     const { id, title, imageUri, genre, released, description, imdbRating, cast, video, categoryName, media_type } = route.params;
     const [imageHeight, setImageHeight] = useState(false)
-    
+
     useEffect(() => { dispatch(getSimilarMovies(id, media_type, categoryName)) }, [])
 
     return (
-        <SafeAreaView style={{ backgroundColor: '#2D6176', height: '100%' }}>
+        <SafeAreaView style={{ backgroundColor: theme, height: '100%' }}>
             <ScrollView showsVerticalScrollIndicator={false} >
                 <Image 
                     style={[styles.imageStyle, { height: imageHeight ? 600 : Dimensions.get('window').height / 2}] }
