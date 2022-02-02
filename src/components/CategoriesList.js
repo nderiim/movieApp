@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux';
 import CategorieCard from './CategorieCard';
 import { getUpcomingMovies, getMoviesByReleaseYear, getPopularTvShows } from '../actions'
-import { useDispatch, useSelector } from 'react-redux';
 
 const currentYear = new Date().getFullYear()
 
@@ -29,17 +29,4 @@ const CategoriesList = ({navigation}) => {
     )
 }
 
-
-
 export default CategoriesList
-
-
-
-
-
-
-
-
-
-
-

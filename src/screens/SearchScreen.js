@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { View, TextInput, StyleSheet, TouchableOpacity, FlatList, SafeAreaView, ActivityIndicator } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'; 
+import { themeContext } from '../context';
 import MovieCard from '../components/MovieCard';
 import { searchMovie, clearSearchResult } from '../actions'
-import { themeContext } from '../context';
 
 const SearchScreen = ({ navigation }) => {
     const theme = useContext(themeContext);

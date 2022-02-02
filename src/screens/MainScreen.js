@@ -1,11 +1,11 @@
 import React, { useEffect, useContext } from 'react'
 import { View, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux';
 import MainMovies from '../components/MainMovies'
 import CategoriesList from '../components/CategoriesList'
 import { SvgCssUri } from 'react-native-svg';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPopularMovies } from '../actions';
 import { themeContext } from '../context';
+import { getPopularMovies } from '../actions';
 
 const MainScreen = ({ navigation }) => {
     const theme = useContext(themeContext);

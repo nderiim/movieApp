@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { themeContext } from './context';
 import MainScreen from './screens/MainScreen';
 import MovieDetailsScreen from './screens/MovieDetailsScreen'
 import SearchScreen from './screens/SearchScreen'
@@ -26,12 +27,12 @@ function SearchStackScreen() {
     )
 };
 
-
 const BottomTab = createMaterialBottomTabNavigator();
 function AppStack() {
+    const theme = useContext(themeContext);
     return (
         <BottomTab.Navigator 
-            barStyle={{ backgroundColor: '#2D6176' }}
+            barStyle={{ backgroundColor: theme }}
             shifting={true}
         >
             <BottomTab.Screen 
