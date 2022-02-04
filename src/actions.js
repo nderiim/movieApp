@@ -294,7 +294,14 @@ export const searchMovie = (keyword) => {
                 for (let i = 0; i < searchResult.length; i++) {
                     var cast = await fetch(`${constants.baseUrl}/${searchResult[i].media_type == 'movie' ? 'movie' : 'tv'}/${searchResult[i].id}/credits?api_key=${constants.api_key}&language=en-US`).then(response => response.json())
                     searchResult[i].cast = []
-                    searchResult[i].cast = getCast(searchResult[i], cast)
+                    for (let j = 0; j < 15; j++) {
+                        searchResult[i].cast[j] = cast.cast[j]
+                        if (searchResult[i].cast[j].profile_path == null || searchResult[i].cast[j].profile_path == undefined) {
+                            searchResult[i].cast[j].profile_path = constants.imageNotAvailable
+                        } else {
+                            searchResult[i].cast[j].profile_path = constants.imageUrl + searchResult[i].cast[j].profile_path
+                        }
+                    }
                 }
             } catch (error) {
                 console.log('Requested movie cast fetch failed!')
