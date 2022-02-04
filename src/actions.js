@@ -3,7 +3,7 @@ import { constants } from "./constants";
 export const getPopularMovies = () => {
     try {
         return async dispatch => {
-            const response = await fetch(`${constants.baseUrl}/movie/upcoming?api_key=${constants.api_key}`).then(response => response.json());
+            const response = await fetch(`${constants.baseUrl}/discover/movie?sort_by=popularity.desc&api_key=${constants.api_key}`).then(response => response.json())
             const genres = await fetch(constants.genreUrl).then(response => response.json())
 
             let popularMovies = []
@@ -46,7 +46,7 @@ export const getPopularMovies = () => {
 export const getUpcomingMovies = () => {
     try {
         return async dispatch => {
-            const response = await fetch(`${constants.baseUrl}/discover/movie?sort_by=popularity.desc&api_key=${constants.api_key}`).then(response => response.json())
+            const response = await fetch(`${constants.baseUrl}/movie/upcoming?api_key=${constants.api_key}`).then(response => response.json());
             const genres = await fetch(constants.genreUrl).then(response => response.json())
 
             let upcomingMovies = []
